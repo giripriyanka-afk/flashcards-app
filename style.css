@@ -227,15 +227,12 @@ input:focus-visible {
 
 .card-item__text { min-width: 0; }
 
-.card-item__q,
-.card-item__a {
+.card-item__q {
   margin: 0;
+  font-weight: 600;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
-
-.card-item__q { font-weight: 600; }
-.card-item__a { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.2rem; }
 
 .card-item__meta {
   display: flex;
@@ -406,3 +403,5 @@ input:focus-visible {
 }
 
 .tab[aria-pressed="true"] .chip-count { opacity: 1; }
+
+.deck-hint { margin: 0 0 0.9rem; }

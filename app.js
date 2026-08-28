@@ -292,6 +292,19 @@ cardForm.addEventListener('submit', (event) => {
   questionInput.focus();
 });
 
+// Enter submits from either field; Shift+Enter still inserts a real newline.
+cardForm.addEventListener('keydown', (event) => {
+  if (event.key !== 'Enter' || event.shiftKey) return;
+  if (!event.target || event.target.tagName !== 'TEXTAREA') return;
+
+  event.preventDefault();
+  if (typeof cardForm.requestSubmit === 'function') {
+    cardForm.requestSubmit();
+  } else {
+    cardForm.dispatchEvent(new Event('submit', { cancelable: true }));
+  }
+});
+
 cardList.addEventListener('click', (event) => {
   const button = event.target.closest('button[data-action]');
   if (!button) return;

@@ -379,3 +379,18 @@ input:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .flashcard__inner { transition: none; }
 }
+
+/* Enter-to-add hint sits on its own line under the button */
+.card-form__actions { flex-wrap: wrap; }
+
+.form-hint { flex-basis: 100%; margin: 0; }
+
+.form-hint kbd {
+  padding: 0.05rem 0.35rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}

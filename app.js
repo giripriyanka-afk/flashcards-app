@@ -7,12 +7,18 @@
    ============================================================ */
 
 const STORAGE_KEY = 'studyFlashcards.deck.v1';
+const FILTER_KEY = 'studyFlashcards.filter.v1';
+
+const FILTERS = ['all', 'known', 'unknown'];
 
 /** The whole deck, in display order. */
 let deck = [];
 
 /** Id of the card currently being edited inline, or null. */
 let editingId = null;
+
+/** Which cards the deck list shows: 'all', 'known', or 'unknown'. */
+let activeFilter = 'all';
 
 /* ---------- Review session state ---------- */
 let inReview = false;
@@ -37,6 +43,7 @@ const cardList = el('card-list');
 const deckEmpty = el('deck-empty');
 const deckStats = el('deck-stats');
 const resetProgressBtn = el('reset-progress');
+const deckFilters = el('deck-filters');
 
 const reviewSetup = el('review-setup');
 const reviewSession = el('review-session');
@@ -77,6 +84,24 @@ function saveDeck() {
   } catch (error) {
     console.error('Could not save the deck.', error);
     showFormError('Your browser blocked saving, so changes may be lost on reload.');
+  }
+}
+
+function loadFilter() {
+  try {
+    const saved = localStorage.getItem(FILTER_KEY);
+    activeFilter = FILTERS.includes(saved) ? saved : 'all';
+  } catch (error) {
+    console.error('Could not read the saved filter.', error);
+    activeFilter = 'all';
+  }
+}
+
+function saveFilter() {
+  try {
+    localStorage.setItem(FILTER_KEY, activeFilter);
+  } catch (error) {
+    console.error('Could not save the filter.', error);
   }
 }
 
@@ -127,13 +152,52 @@ function showView(name) {
 
 function renderDeck() {
   cardList.textContent = '';
-  deckEmpty.hidden = deck.length > 0;
   resetProgressBtn.hidden = deck.length === 0;
+  deckFilters.hidden = deck.length === 0;
   renderStats();
+  renderFilterChips();
 
-  deck.forEach((card) => {
+  const visible = visibleCards();
+  deckEmpty.hidden = visible.length > 0;
+  deckEmpty.textContent = emptyMessage();
+
+  visible.forEach((card) => {
     cardList.appendChild(card.id === editingId ? buildEditRow(card) : buildCardRow(card));
   });
+}
+
+/** Cards the current filter lets through. 'unknown' means anything not known yet. */
+function visibleCards() {
+  if (activeFilter === 'known') return deck.filter((card) => card.status === 'known');
+  if (activeFilter === 'unknown') return deck.filter((card) => card.status !== 'known');
+  return deck;
+}
+
+function renderFilterChips() {
+  const known = deck.filter((card) => card.status === 'known').length;
+  const counts = { all: deck.length, known, unknown: deck.length - known };
+
+  deckFilters.querySelectorAll('button[data-filter]').forEach((chip) => {
+    const name = chip.dataset.filter;
+    chip.setAttribute('aria-pressed', String(name === activeFilter));
+    const count = chip.querySelector('.chip-count');
+    if (count) count.textContent = counts[name];
+  });
+}
+
+function emptyMessage() {
+  if (deck.length === 0) return 'No cards yet. Add your first question and answer above.';
+  if (activeFilter === 'known') return 'No cards are marked known yet.';
+  if (activeFilter === 'unknown') return 'Every card is marked known — nothing left to learn.';
+  return '';
+}
+
+function setFilter(name) {
+  if (!FILTERS.includes(name) || name === activeFilter) return;
+  activeFilter = name;
+  editingId = null;   // the card being edited may not survive the new filter
+  saveFilter();
+  renderDeck();
 }
 
 function renderStats() {
@@ -252,6 +316,13 @@ function buildEditField(labelText, name, value) {
 
 function addCard(question, answer) {
   deck.unshift({ id: makeId(), question, answer, status: 'new' });
+
+  // A brand new card is never "known", so don't let that filter hide it.
+  if (activeFilter === 'known') {
+    activeFilter = 'all';
+    saveFilter();
+  }
+
   saveDeck();
   renderDeck();
 }
@@ -348,6 +419,11 @@ cardList.addEventListener('submit', (event) => {
   updateCard(item.dataset.id, question, answer);
   editingId = null;
   renderDeck();
+});
+
+deckFilters.addEventListener('click', (event) => {
+  const chip = event.target.closest('button[data-filter]');
+  if (chip) setFilter(chip.dataset.filter);
 });
 
 resetProgressBtn.addEventListener('click', () => {
@@ -545,4 +621,5 @@ document.addEventListener('keydown', (event) => {
    ============================================================ */
 
 loadDeck();
+loadFilter();
 showView('deck');

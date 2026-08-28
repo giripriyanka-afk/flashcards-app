@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study with Flashcards</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="topbar__title">Study with Flashcards</h1>
+    <nav class="tabs" aria-label="Views">
+      <button type="button" id="nav-deck" class="tab" aria-pressed="true">Deck</button>
+      <button type="button" id="nav-review" class="tab" aria-pressed="false">Review</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ---------- Deck view ---------- -->
+    <section id="deck-view" class="view" aria-labelledby="deck-heading">
+      <h2 id="deck-heading" class="visually-hidden">Your deck</h2>
+
+      <form id="card-form" class="panel card-form" autocomplete="off">
+        <h3 class="panel__title">Add a new card</h3>
+        <label class="field">
+          <span class="field__label">Question</span>
+          <textarea id="question-input" rows="2" required
+                    placeholder="What does HTML stand for?"></textarea>
+        </label>
+        <label class="field">
+          <span class="field__label">Answer</span>
+          <textarea id="answer-input" rows="2" required
+                    placeholder="HyperText Markup Language"></textarea>
+        </label>
+        <div class="card-form__actions">
+          <button type="submit" class="btn btn--primary">Add card</button>
+          <p id="form-error" class="form-error" role="alert"></p>
+        </div>
+      </form>
+
+      <div class="deck-header">
+        <p id="deck-stats" class="deck-stats"></p>
+        <button type="button" id="reset-progress" class="btn btn--ghost btn--small">
+          Reset progress
+        </button>
+      </div>
+
+      <p id="deck-empty" class="empty" hidden>
+        No cards yet. Add your first question and answer above.
+      </p>
+      <ul id="card-list" class="card-list"></ul>
+    </section>
+
+    <!-- ---------- Review view ---------- -->
+    <section id="review-view" class="view" aria-labelledby="review-heading" hidden>
+      <h2 id="review-heading" class="visually-hidden">Review mode</h2>
+
+      <div id="review-setup" class="panel review-setup">
+        <h3 class="panel__title">Start a review session</h3>
+        <label class="checkbox">
+          <input type="checkbox" id="only-learning">
+          <span>Only cards I don't know yet</span>
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" id="shuffle-cards" checked>
+          <span>Shuffle the order</span>
+        </label>
+        <button type="button" id="start-review" class="btn btn--primary">Start review</button>
+        <p id="review-setup-note" class="hint"></p>
+      </div>
+
+      <div id="review-session" hidden>
+        <p class="review-progress">
+          <span id="review-progress">Card 1 of 1</span>
+          <button type="button" id="exit-review" class="btn btn--ghost btn--small">End session</button>
+        </p>
+
+        <button type="button" id="flashcard" class="flashcard" aria-live="polite">
+          <span class="flashcard__inner">
+            <span class="flashcard__face flashcard__face--front">
+              <span class="flashcard__tag">Question</span>
+              <span class="flashcard__text" id="card-question"></span>
+              <span class="flashcard__hint">Click or press Space to flip</span>
+            </span>
+            <span class="flashcard__face flashcard__face--back">
+              <span class="flashcard__tag">Answer</span>
+              <span class="flashcard__text" id="card-answer"></span>
+              <span class="flashcard__hint">How did you do?</span>
+            </span>
+          </span>
+        </button>
+
+        <div class="mark-actions">
+          <button type="button" id="mark-learning" class="btn btn--learning">
+            Still learning <kbd>L</kbd>
+          </button>
+          <button type="button" id="mark-known" class="btn btn--known">
+            I knew it <kbd>K</kbd>
+          </button>
+        </div>
+      </div>
+
+      <div id="review-done" class="panel done" hidden>
+        <h3 class="panel__title">Session complete</h3>
+        <p id="done-summary" class="done__summary"></p>
+        <div class="done__actions">
+          <button type="button" id="review-again" class="btn btn--primary">Review again</button>
+          <button type="button" id="back-to-deck" class="btn btn--ghost">Back to deck</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

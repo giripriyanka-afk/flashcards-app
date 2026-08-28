@@ -44,6 +44,7 @@ const deckEmpty = el('deck-empty');
 const deckStats = el('deck-stats');
 const resetProgressBtn = el('reset-progress');
 const deckFilters = el('deck-filters');
+const deckHint = el('deck-hint');
 
 const reviewSetup = el('review-setup');
 const reviewSession = el('review-session');
@@ -154,6 +155,7 @@ function renderDeck() {
   cardList.textContent = '';
   resetProgressBtn.hidden = deck.length === 0;
   deckFilters.hidden = deck.length === 0;
+  deckHint.hidden = deck.length === 0;
   renderStats();
   renderFilterChips();
 
@@ -225,11 +227,11 @@ function buildCardRow(card) {
   question.className = 'card-item__q';
   question.textContent = card.question;
 
-  const answer = document.createElement('p');
-  answer.className = 'card-item__a';
-  answer.textContent = card.answer;
-
-  text.append(question, answer);
+  // The answer is deliberately absent from the deck list: it should only be
+  // revealed by flipping a card in review mode. Keeping it out of the DOM
+  // (rather than hiding it with CSS) also keeps it out of Ctrl+F and out of
+  // the accessibility tree. Edit still shows it, since that is an explicit ask.
+  text.append(question);
 
   const meta = document.createElement('div');
   meta.className = 'card-item__meta';
